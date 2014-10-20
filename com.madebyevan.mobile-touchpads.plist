@@ -1,0 +1,33 @@
+<!--
+
+This runs the script "mobile-touchpads.js" automatically at login. It assumes
+that the script has been installed globally with "npm install -g mobile-touchpads".
+
+To install:
+- Copy this to "~/Library/LaunchAgents/com.madebyevan.mobile-touchpads.plist"
+- Run "launchctl load ~/Library/LaunchAgents/com.madebyevan.mobile-touchpads.plist"
+- Run "launchctl start com.madebyevan.mobile-touchpads"
+
+To uninstall:
+- Run "launchctl unload ~/Library/LaunchAgents/com.madebyevan.mobile-touchpads.plist"
+- Delete "~/Library/LaunchAgents/com.madebyevan.mobile-touchpads.plist"
+
+-->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.madebyevan.mobile-touchpads</string>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>sh</string>
+    <string>-c</string>
+    <string>PATH=$PATH:/usr/local/bin mobile-touchpads</string>
+  </array>
+</dict>
+</plist>

@@ -1,0 +1,12 @@
+{
+  "name": "mobile-touchpads",
+  "version": "0.1.1",
+  "repository": "https://github.com/evanw/mobile-touchpads",
+  "description": "Use one or more iPhones as remote touchpads in an HTML page",
+  "bin": {
+    "mobile-touchpads": "./mobile-touchpads.js"
+  },
+  "dependencies": {
+    "ws": "0.4.32"
+  }
+}

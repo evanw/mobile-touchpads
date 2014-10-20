@@ -1,0 +1,128 @@
+<style>
+
+body {
+  color: white;
+  background: black;
+  font: 12px sans-serif;
+}
+
+#status {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  right: 20px;
+  text-align: center;
+  z-index: 1;
+}
+
+canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+</style>
+<body>
+  <div id="status"></div>
+</body>
+<script src="http://localhost:7550/script.js"></script>
+<script>
+
+(function() {
+  function render() {
+    var colors = ['#FFF', '#F00', '#0F0', '#00F', '#0FF', '#F0F', '#FF0'];
+    needsRender = false;
+    context.clearRect(0, 0, width, height);
+    touchpads.devices.forEach(function(device, index) {
+      var scale = Math.min(width / device.width, height / device.height);
+      var touches = device.touches.map(function(touch) {
+        return {
+          x: width / 2 + (touch.x - device.width / 2) * scale,
+          y: height / 2 + (touch.y - device.height / 2) * scale
+        };
+      });
+
+      // Lines
+      context.strokeStyle = colors[index % colors.length];
+      context.lineWidth = 5;
+      context.beginPath();
+      for (var i = 0; i < touches.length; i++) {
+        var a = touches[i];
+        for (var j = i + 1; j < touches.length; j++) {
+          var b = touches[j];
+          context.moveTo(a.x, a.y);
+          context.lineTo(b.x, b.y);
+        }
+      }
+      context.stroke();
+
+      // Solid circles
+      context.fillStyle = colors[index % colors.length];
+      for (var i = 0; i < touches.length; i++) {
+        var touch = touches[i];
+        context.beginPath();
+        context.arc(touch.x, touch.y, 50, 0, Math.PI * 2, false);
+        context.fill();
+      }
+
+      // Empty circles
+      context.fillStyle = '#000';
+      for (var i = 0; i < touches.length; i++) {
+        var touch = touches[i];
+        context.beginPath();
+        context.arc(touch.x, touch.y, 40, 0, Math.PI * 2, false);
+        context.fill();
+      }
+    });
+    updateStatus();
+  }
+
+  function tick() {
+    if (needsRender) {
+      render();
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function updateStatus() {
+    var text = touchpads.status;
+    if (text === 'Connected') {
+      text += ' (' + touchpads.devices.length + ' device' + (touchpads.devices.length === 1 ? '' : 's') + ')';
+    }
+    status.textContent = text;
+  }
+
+  window.onresize = function() {
+    var ratio = window.devicePixelRatio || 1;
+    width = innerWidth;
+    height = innerHeight;
+    canvas.width = Math.round(width * ratio);
+    canvas.height = Math.round(height * ratio);
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    context.scale(canvas.width / width, canvas.height / height);
+    render();
+  };
+
+  touchpads.onstatuschange = function() {
+    updateStatus();
+  };
+
+  touchpads.onupdate = function() {
+    needsRender = true;
+  };
+
+  var status = document.getElementById('status');
+  var needsRender = false;
+  var canvas = document.createElement('canvas');
+  var context = canvas.getContext('2d');
+  var width = 0;
+  var height = 0;
+
+  window.onresize();
+  touchpads.onstatuschange();
+  requestAnimationFrame(tick);
+  document.body.appendChild(canvas);
+})();
+
+</script>
